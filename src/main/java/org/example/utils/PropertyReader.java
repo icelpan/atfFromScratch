@@ -1,7 +1,7 @@
 package org.example.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,13 +22,13 @@ public class PropertyReader {
 
     private static final String DEFAULT_FILE = "application.properties";
     private static final PropertyReader INSTANCE = new PropertyReader();
-    private static final Log LOGGER = LogFactory.getLog(PropertyReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertyReader.class);
     private final Properties properties = new Properties();
 
     private PropertyReader() {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(DEFAULT_FILE)) {
             if (input == null) {
-               LOGGER.warn("Could not find " + DEFAULT_FILE);
+                LOGGER.warn("Could not find " + DEFAULT_FILE);
             } else {
                 properties.load(input);
             }
@@ -59,10 +59,9 @@ public class PropertyReader {
     }
 
     public boolean getBooleanProperty(String name) {
-        String value = getProperty(name).trim().toLowerCase();
-        if (!value.equals("true") && !value.equals("false")) {
-            throw new IllegalArgumentException("Invalid boolean for property '" + name + "': " + value);
-        }
-        return Boolean.parseBoolean(value);
+        String value = getProperty(name).trim();
+        if ("true".equalsIgnoreCase(value)) return true;
+        if ("false".equalsIgnoreCase(value)) return false;
+        throw new IllegalArgumentException("Invalid boolean for property '" + name + "': " + value);
     }
 }
